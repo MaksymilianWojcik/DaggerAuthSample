@@ -62,7 +62,8 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
 
     // Rx-Retrofit Call Adapter
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$rxcalladapter_version" // Retrofit call adapter
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$rxcalladapter_version"
+    // Retrofit call adapter
 
     // Reactive Streams (convert Observable to LiveData)
     implementation "android.arch.lifecycle:reactivestreams:$reactivestreams_version"

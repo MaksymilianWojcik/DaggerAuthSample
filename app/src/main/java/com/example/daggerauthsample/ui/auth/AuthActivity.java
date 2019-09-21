@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,6 +18,7 @@ import com.bumptech.glide.RequestManager;
 import com.example.daggerauthsample.R;
 import com.example.daggerauthsample.models.User;
 import com.example.daggerauthsample.network.auth.AuthResource;
+import com.example.daggerauthsample.ui.main.MainActivity;
 import com.example.daggerauthsample.viewmodels.ViewModelProviderFactory;
 
 import javax.inject.Inject;
@@ -60,18 +62,7 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void subscribeObservers() {
-//        viewModel.observeuser().observe(this, new Observer<User>() {
-//            @Override
-//            public void onChanged(User user) {
-//                if (user != null) {
-//                    Log.d(TAG, "onChanged: authenticated for user " + user.getEmail());
-//                } else {
-//                    Log.d(TAG, "onChanged: user is null");
-//                }
-//            }
-//        });
-
-        viewModel.observeuser().observe(this, new Observer<AuthResource<User>>() {
+        viewModel.observeAuthState().observe(this, new Observer<AuthResource<User>>() {
             @Override
             public void onChanged(AuthResource<User> userAuthResource) {
                 if(userAuthResource != null) {
@@ -82,6 +73,7 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
                         case AUTHENTICATED:
                             showProgressBar(false);
                             Log.d(TAG, "onChanged: LOGIN SUCCESS: " + userAuthResource.data.getEmail());
+                            onLoginSuccess();
                             break;
                         case ERROR:
                             showProgressBar(false);
@@ -94,6 +86,12 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
                 }
             }
         });
+    }
+
+    private void onLoginSuccess(){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void showProgressBar(boolean isVisible) {
