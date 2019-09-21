@@ -12,7 +12,8 @@ import dagger.android.support.AndroidSupportInjectionModule;
 @Component(
         modules = {
                 AndroidSupportInjectionModule.class, // mandatory when we use AndroidInjector, only once in app level component
-                ActivityBuildersModule.class
+                ActivityBuildersModule.class,
+                AppModule.class
         }
 )
 public interface AppComponent extends AndroidInjector<BaseApplication> {
