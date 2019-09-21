@@ -16,7 +16,9 @@ import com.example.daggerauthsample.viewmodels.ViewModelProviderFactory;
 
 import javax.inject.Inject;
 
-public class PostsFragment extends Fragment {
+import dagger.android.support.DaggerFragment;
+
+public class PostsFragment extends DaggerFragment {
 
     private static final String TAG = "PostsFragment";
 
