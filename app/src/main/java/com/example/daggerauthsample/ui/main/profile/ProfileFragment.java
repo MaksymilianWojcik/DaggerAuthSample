@@ -5,12 +5,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.daggerauthsample.R;
+import com.example.daggerauthsample.models.User;
+import com.example.daggerauthsample.network.auth.AuthResource;
 import com.example.daggerauthsample.viewmodels.ViewModelProviderFactory;
 
 import javax.inject.Inject;
@@ -22,6 +26,10 @@ public class ProfileFragment extends DaggerFragment {
     private static final String TAG = "ProfileFragment";
 
     private ProfileViewModel viewModel;
+
+    TextView email;
+    TextView username;
+    TextView website;
     
     @Inject
     ViewModelProviderFactory providerFactory;
@@ -35,6 +43,45 @@ public class ProfileFragment extends DaggerFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onViewCreated: ProfileFragment view created");
+        email = view.findViewById(R.id.email);
+        username = view.findViewById(R.id.username);
+        website = view.findViewById(R.id.website);
+
         viewModel = ViewModelProviders.of(this, providerFactory).get(ProfileViewModel.class);
+
+        subscribeObservers();
+    }
+
+    private void subscribeObservers() {
+        viewModel.getAuthenticatedUser().removeObservers(getViewLifecycleOwner());
+        viewModel.getAuthenticatedUser().observe(getViewLifecycleOwner(), new Observer<AuthResource<User>>() {
+            @Override
+            public void onChanged(AuthResource<User> userAuthResource) {
+                if(userAuthResource != null){
+                    switch (userAuthResource.status) {
+                        case AUTHENTICATED: {
+                            setUserDetails(userAuthResource.data);
+                            break;
+                        }
+                        case ERROR: {
+                            setErrorDetails(userAuthResource.message);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private void setUserDetails(User user) {
+        email.setText(user.getEmail());
+        username.setText(user.getUsername());
+        website.setText(user.getWebsite());
+    }
+
+    private void setErrorDetails(String message) {
+        email.setText(message);
+        username.setText("error");
+        website.setText("error");
     }
 }
