@@ -10,10 +10,12 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.daggerauthsample.models.User;
 import com.example.daggerauthsample.network.auth.AuthApi;
+import com.example.daggerauthsample.network.auth.AuthResource;
 
 import javax.inject.Inject;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class AuthViewModel extends ViewModel {
@@ -22,7 +24,7 @@ public class AuthViewModel extends ViewModel {
 
     private final AuthApi authApi;
 
-    private MediatorLiveData<User> authUser = new MediatorLiveData<>();
+    private MediatorLiveData<AuthResource<User>> authUser = new MediatorLiveData<>();
 
     @Inject
     public AuthViewModel(AuthApi authApi){
@@ -30,13 +32,34 @@ public class AuthViewModel extends ViewModel {
     }
 
     public void authenticateById(int userId) {
-        final LiveData<User> source = LiveDataReactiveStreams.fromPublisher(
-                authApi.getUserById(userId).subscribeOn(Schedulers.io())
+
+        authUser.setValue(AuthResource.loading((User) null));
+
+        final LiveData<AuthResource<User>> source = LiveDataReactiveStreams.fromPublisher(
+                authApi.getUserById(userId)
+                        .onErrorReturn(new Function<Throwable, User>() {
+                            @Override
+                            public User apply(Throwable throwable) throws Exception {
+                                User errorUser = new User();
+                                errorUser.setId(-1);
+                                return errorUser;
+                            }
+                        })
+                        .map(new Function<User, AuthResource<User>>() {
+                            @Override
+                            public AuthResource<User> apply(User user) throws Exception {
+                                if(user.getId() == -1) {
+                                    return AuthResource.error("Could not authenticate", (User) null);
+                                }
+                                return AuthResource.authenticated(user);
+                            }
+                        })
+                        .subscribeOn(Schedulers.io())
         );
 
-        authUser.addSource(source, new Observer<User>() {
+        authUser.addSource(source, new Observer<AuthResource<User>>() {
             @Override
-            public void onChanged(User user) {
+            public void onChanged(AuthResource<User> user) {
                 authUser.setValue(user);
                 authUser.removeSource(source);
             }
@@ -45,7 +68,7 @@ public class AuthViewModel extends ViewModel {
 
     }
 
-    public LiveData<User> observeuser() {
+    public LiveData<AuthResource<User>> observeuser() {
         return authUser;
     }
 
