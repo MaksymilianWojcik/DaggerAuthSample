@@ -10,12 +10,15 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.daggerauthsample.R;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 
 @Module
 public abstract class AppModule {
 
+    @Singleton
     @Provides
     static RequestOptions provideRequestOptions() {
         return RequestOptions
@@ -23,6 +26,7 @@ public abstract class AppModule {
                 .error(R.drawable.white_background);
     }
 
+    @Singleton
     @Provides
     static RequestManager provideGlideInstance(Application application, RequestOptions requestOptions) {
         return Glide
@@ -30,6 +34,7 @@ public abstract class AppModule {
                 .setDefaultRequestOptions(requestOptions);
     }
 
+    @Singleton
     @Provides
     static Drawable provideAppLogoDrawable(Application application) {
         return ContextCompat.getDrawable(application, R.drawable.logo);
