@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class AuthActivity extends AppCompatActivity {
+import dagger.android.support.DaggerAppCompatActivity;
+
+public class AuthActivity extends DaggerAppCompatActivity { // DaggerAppCompatActivity cause we use android dagger classes
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
