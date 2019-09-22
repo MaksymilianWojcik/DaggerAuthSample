@@ -28,6 +28,7 @@ dependencies {
     def rxjava_version = '2.1.1'
     def rxcalladapter_version = '2.5.0'
     def reactivestreams_version = "1.1.1"
+    def nav_version = "2.1.0"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -67,4 +68,8 @@ dependencies {
 
     // Reactive Streams (convert Observable to LiveData)
     implementation "android.arch.lifecycle:reactivestreams:$reactivestreams_version"
+
+    // Navigation
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
 }
